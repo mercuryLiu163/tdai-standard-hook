@@ -24,8 +24,12 @@ if (Test-Path -LiteralPath $gitDir) {
     git clone --depth 1 $Repository $root
 }
 
-$configDir = Join-Path $env:USERPROFILE ".tdai"
-$config = Join-Path $configDir "config.json"
+$config = if ($env:TDAI_CONFIG) {
+    [IO.Path]::GetFullPath($env:TDAI_CONFIG)
+} else {
+    Join-Path $env:USERPROFILE ".tdai\config.json"
+}
+$configDir = Split-Path -Parent $config
 if (-not (Test-Path -LiteralPath $config)) {
     New-Item -ItemType Directory -Path $configDir -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $root "tdai-memory.example.json") -Destination $config
