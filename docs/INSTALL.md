@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 # TDAI Standard Hook：GitHub 分发与跨电脑安装
 
 ## 1. 发布到 GitHub
