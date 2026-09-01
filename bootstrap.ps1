@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 param(
     [Parameter(Mandatory = $true)]
     [string]$Repository,
