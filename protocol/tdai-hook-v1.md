@@ -49,7 +49,9 @@ camelCase 别名。宿主没有直接提供 prompt 或 assistant message 时，�
 2. 把会话 ID、提示词、上一轮回复和工作目录映射到标准字段；
 3. 调用标准核心并把上下文转换回原生响应；
 4. 为 `Stop` 传入真实的 assistant message，不能伪造回复；
-5. 任何解析、网络或核心错误都 fail-open。
+5. 宿主字段不完整时，从 transcript 倒序提取最近真实用户消息和最终模型文本，
+   再使用标准字段别名回退；不要把工具日志或 Hook 输出当成 assistant message；
+6. 任何解析、网络或核心错误都 fail-open。
 
 核心之外的实现可以是 shell、PowerShell、Python、TypeScript 或 Agent 自己
 生成的插件，但不得复制记忆业务逻辑。
