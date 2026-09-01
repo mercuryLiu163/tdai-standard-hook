@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 #!/usr/bin/env python3
 """TDAI Standard Hook v1.
 
