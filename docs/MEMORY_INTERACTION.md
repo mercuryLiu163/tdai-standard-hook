@@ -8,28 +8,27 @@ Agent 原来的模型 endpoint。
 
 ```mermaid
 flowchart TD
-    U[用户提示词] --> A[宿主 Agent]
-    A --> N[Agent 原生 Hook 适配器]
-    N -->|标准 JSON stdin| H[tdai-hook.py]
-    H --> E{标准事件}
-    E -->|SessionStart| T[/v3/meta/task/list\n必要时读取 Task 列表]
-    E -->|UserPromptSubmit| D{是否需要召回?}
-    D -->|否| C[仅生成 Task/身份上下文]
-    D -->|是: 关键词或强制命令| R1[/v3/atomic/search]
-    D -->|是| R2[/v3/core/read]
-    D -->|是| R3[/v3/scenario/ls]
+    U["用户提示词"] --> A["宿主 Agent"]
+    A --> N["Agent 原生 Hook 适配器"]
+    N -->|标准 JSON stdin| H["tdai-hook.py"]
+    H --> E{"标准事件"}
+    E -->|SessionStart| T["/v3/meta/task/list<br/>必要时读取 Task 列表"]
+    E -->|UserPromptSubmit| D{"是否需要召回"}
+    D -->|否| C["仅生成 Task/身份上下文"]
+    D -->|召回| R1["/v3/atomic/search"]
+    D -->|召回| R2["/v3/core/read"]
+    D -->|召回| R3["/v3/scenario/ls"]
     T --> C
-    R1 --> M[组合 tdai-memory 上下文]
+    R1 --> M["组合 tdai-memory 上下文"]
     R2 --> M
     R3 --> M
-    C --> O[hookSpecificOutput.additionalContext]
+    C --> O["hookSpecificOutput.additionalContext"]
     M --> O
-    O --> N
-    N -->|上下文 + 原始用户提示| A
+    O -->|注入上下文| A
     A -->|生成真实回复| U
-    A -->|Stop + 真实 assistant message| N
-    N --> H2[tdai-hook.py]
-    H2 -->|/v3/conversation/add| W[TencentDB Agent Memory 写回]
+    A -->|Stop 事件| N
+    N --> H2["tdai-hook.py"]
+    H2 -->|写回对话| W["TencentDB Agent Memory 写回"]
 ```
 
 用一句话概括：
