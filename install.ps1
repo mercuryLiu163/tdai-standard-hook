@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 param([switch]$Apply)
 $argsList = @("-3", (Join-Path $PSScriptRoot "install.py"))
 if ($Apply) { $argsList += "--apply" }
