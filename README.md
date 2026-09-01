@@ -5,10 +5,17 @@
 可以被 Codex、Claude Code、ZCode、Grok、agy、DeepSeek Harness 等复用；OpenCode
 通过 `adapters/opencode-plugin.ts` 调用同一核心。
 
+## Agent 一句话安装
+
+用户可以只发送“请根据 GitHub 仓库地址安装 TDAI Standard Hook”并附上本仓库
+地址。Agent 克隆仓库后，先读取根目录的 `AGENT_INSTALL.md`，再按其中流程
+安装、生成自己的原生 Hook 并验证。完整人工安装说明见 `docs/INSTALL.md`。
+
 ## 目录
 
 - `tdai-hook.py`：标准核心，包含 Session/Task 绑定、条件召回、L0 capture、原子状态、日志和 fail-open。
 - `manifest.json`：协议版本、事件和适配器清单。
+- `AGENT_INSTALL.md`：给各 Agent 自行执行安装和生成原生 Hook 的入口。
 - `tdai-memory.example.json`：不含密钥的配置模板。
 - `adapters/README.md`：统一事件协议和各 Agent 接入方式。
 - `adapters/opencode-plugin.ts`：OpenCode v2 进程内插件。
