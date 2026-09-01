@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 #!/usr/bin/env python3
 """Install or print TDAI standard-hook snippets without clobbering config."""
 from __future__ import annotations
