@@ -82,8 +82,13 @@ Agent 仍然负责回答用户；Hook 只负责在回答前提供上下文、在
 
 ## 四、Task 绑定与跨 Task 读取
 
-如果配置启用了 `require_task_selection`，新会话首次会收到 Task 选择提示。用户
-可以回复：
+模板默认将 `require_task_selection` 设为 `false`，新会话会立即使用 Agent 级别
+绑定，从而不会因为首次 Task 选择而跳过第一轮 L0 写回。它不会凭空选择某个具名
+Task；需要具名 Task 时，请使用下面的命令或把配置设为 `true`。
+
+如果配置启用了 `require_task_selection=true`，新会话首次会收到 Task 选择提示，
+第一条业务请求会暂存，直到用户完成选择。这是严格隔离模式的预期行为，不是网络
+故障。用户可以回复：
 
 ```text
 保持                 # 沿用上次绑定
@@ -135,6 +140,19 @@ assistant message 映射到标准字段：
 
 适配器不能复制召回/写回逻辑，不能把 Memory endpoint 当成模型 endpoint，也不能
 把 Agent 专用配置路径和密钥写进标准核心。
+
+### Windows 路径传递
+
+宿主只接受 command 字符串时，使用安装后的实际绝对路径和正斜杠，例如：
+
+```text
+py -3 C:/Users/<user>/.tdai-hook/adapters/<agent>-hook.py
+```
+
+不要把 `"%USERPROFILE%\\..."` 再嵌套进 JSON command 字符串；这会让 Windows
+`cmd /c` 把引号当成路径内容。宿主支持 argv 时，优先传递
+`["py", "-3", "C:/.../<agent>-hook.py"]`。适配器应根据自身文件位置解析标准
+核心，不能硬编码某台机器的用户名、路径或 Task ID。
 
 ## 七、可直接复制的提示词
 
