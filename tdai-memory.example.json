@@ -8,7 +8,7 @@
   "agent_id": "agt-REPLACE",
   "agent_name": "你的 Agent",
   "timeout_sec": 4,
-  "require_task_selection": true,
+  "require_task_selection": false,
   "capture_enabled": true,
   "output_mode": "hookSpecificOutput",
   "profiles": {
