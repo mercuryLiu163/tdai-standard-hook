@@ -1,135 +1,57 @@
-# TDAI Standard Hook：GitHub 分发与跨电脑安装
+# TDAI Standard Hook：GitHub 分发与跨平台安装
 
-## 1. 发布到 GitHub
+本页是安装索引。Agent 自动安装时先读取根目录的 `AGENT_INSTALL.md`，再按操作
+系统进入对应平台文档：
 
-仓库只放标准套件源码和模板，不放实际 `user_key`、`config.json`、状态目录、
-日志或会话文件。建议仓库至少包含：
+- [Windows](platforms/windows.md)
+- [Ubuntu](platforms/ubuntu.md)
+- [macOS](platforms/macos.md)
 
-```text
-tdai-hook.py
-tdai-memory.example.json
-manifest.json
-install.py
-install.ps1
-bootstrap.ps1
-adapters/
-tests/
-README.md
-```
-
-在当前套件目录执行：
-
-```powershell
-git init
-git add .
-git commit -m "release tdai standard hook v1"
-git branch -M main
-git remote add origin https://github.com/<org>/<repo>.git
-git push -u origin main
-```
-
-发布前运行：
-
-```powershell
-py -3 -m py_compile .\tdai-hook.py .\install.py
-py -3 -m unittest discover -s .\tests -v
-```
-
-## 2. 其他 Windows 电脑的一键安装
-
-管理员权限不是必需的。首次运行只会 clone 仓库并生成本地配置模板，然后以
-退出码 2 停止，避免把占位符当成真实密钥：
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-& .\bootstrap.ps1 -Repository "https://github.com/<org>/<repo>.git"
-```
-
-编辑生成的 `%USERPROFILE%\\.tdai\\config.json`：
-
-```json
-{
-  "endpoint": "http://<memory-host>:8420",
-  "user_key": "只保存在本机的密钥",
-  "user_id": "usr-...",
-  "team_id": "team-...",
-  "agent_id": "agt-...",
-  "team_name": "GIS系统",
-  "agent_name": "GIS-toolbox"
-}
-```
-
-然后执行安装：
-
-```powershell
-& "$env:USERPROFILE\\.tdai-hook\\bootstrap.ps1" `
-  -Repository "https://github.com/<org>/<repo>.git" -Apply
-```
-
-`-Apply` 会对现有 Claude Code、Codex、ZCode JSON 配置做最小合并，并在同一目录
-留下 `*.bak-tdai-时间戳`；不修改模型地址，不覆盖无关 Hook。省略 `-Apply` 是
-dry-run。验证：
-
-```powershell
-py -3 "$env:USERPROFILE\\.tdai-hook\\tdai-hook.py" --status
-py -3 "$env:USERPROFILE\\.tdai-hook\\install.py"
-```
-
-## 3. 各 Agent 接入
-
-### Claude Code / Codex / ZCode / Grok / agy / DeepSeek Harness
-
-它们若支持 JSON command hook，统一调用：
+## 仓库结构
 
 ```text
-py -3 %USERPROFILE%\\.tdai-hook\\tdai-hook.py
+tdai-hook.py                  # 标准核心
+bootstrap.ps1                 # Windows 安装引导
+bootstrap.sh                  # Ubuntu/macOS 安装引导
+install.py / install.ps1      # 配置检查与最小合并
+tdai-memory.example.json      # 不含密钥的配置模板
+protocol/                     # tdai-hook/v1 标准协议
+adapters/                    # 各 Agent 薄适配器说明和示例
+docs/platforms/              # 平台安装说明
+tests/                        # 无网络协议回归测试
 ```
 
-输入 `SessionStart`、`UserPromptSubmit`、`Stop` 事件，输出
-`hookSpecificOutput.additionalContext`。同一套配置可通过 `TDAI_PROFILE` 选择
-`codex`、`claude-code`、`zcode`、`grok`、`deepseek`、`harness`；是否共用
-记忆由 profile 的 `agent_id` 决定。
+仓库只放标准套件源码和模板，不放实际 `user_key`、用户 `config.json`、状态目录、
+日志或会话文件。发布前在仓库根目录运行：
 
-### 原生协议不同的 Agent（例如 agy、OpenCode）
+```text
+python -m py_compile tdai-hook.py install.py
+python -m unittest discover -s tests -v
+```
 
-先读取 `adapters\\README.md` 和 `protocol\\tdai-hook-v1.md`，让目标 Agent
-根据自己的 Hook 文档生成薄适配器。适配器只做字段和输出格式转换：
+Windows 使用 `py -3` 替代 `python`；Ubuntu/macOS 使用 `python3`。发布到 GitHub
+后，用户或 Agent 只需提供仓库地址，平台安装文档会完成其余步骤。
+
+## 各 Agent 接入
+
+标准核心接收 `SessionStart`、`UserPromptSubmit`、`Stop` 三类事件，输出标准 JSON。
+目标 Agent 先阅读 `adapters/README.md` 和 `protocol/tdai-hook-v1.md`，再依据自己
+的原生 Hook 文档生成薄适配器：
 
 ```text
 原生事件 → 标准 JSON → tdai-hook.py → 标准上下文 → 原生响应
 ```
 
-不要把宿主专用配置路径、模型地址或密钥放进标准核心。这样同一份核心可以
-被不同 Agent 复用，而每个 Agent 的钩子由它自己遵循本机协议生成。
+适配器只负责字段映射、调用和响应格式转换；不要把宿主专用配置路径、模型地址或
+密钥写进标准核心。OpenCode 的进程内插件示例位于 `adapters/opencode-plugin.ts`，
+它仍需按正在运行的 OpenCode 版本调整。
 
-### OpenCode
+## 更新、回滚与服务器要求
 
-OpenCode 使用进程内插件：
+各平台安装脚本的 `--update` / `-Update` 会在安装目录有未提交修改时拒绝覆盖；
+显式 `--apply` / `-Apply` 才会合并 Agent 配置，并尽量留下备份。标准套件本身可
+通过 Git tag 回到已发布版本。
 
-```powershell
-cd "$env:USERPROFILE\\.tdai-hook\\adapters"
-bun install
-```
-
-将 `adapters/opencode-plugin.ts` 加到 OpenCode 的全局插件目录或
-`opencode.json` 的 `plugins`。它通过 v2 `session.hook("prompt")` 调用标准核心；
-具体版本要与正在运行的 OpenCode 匹配，加载后用 `opencode2 api get /api/plugin`
-确认。OpenCode v2 插件 API 当前仍可能变化。
-
-## 4. 更新与回滚
-
-更新前确认安装目录没有未提交改动：
-
-```powershell
-& "$env:USERPROFILE\\.tdai-hook\\bootstrap.ps1" `
-  -Repository "https://github.com/<org>/<repo>.git" -Update -Apply
-```
-
-若只需回滚 Agent 配置，从对应 `*.bak-tdai-*` 备份恢复；标准套件本身可用
-`git -C "$env:USERPROFILE\\.tdai-hook" checkout <tag>` 回到已发布版本。
-
-## 5. 服务器端要求
-
-每台电脑只需能访问 Memory API endpoint（默认 `/v3` 路径），并为使用者准备
-有效的 `user_key`、`user_id`、`team_id`、`agent_id`。Hook 是旁路记忆调用，模型
-仍走各 Agent 原来的登录和模型配置；后端不可达时 Hook fail-open，不阻塞 Agent。
+每台电脑只需能访问 Memory API endpoint（默认 `/v3` 路径），并由用户私下提供有效
+的 `user_key`、`user_id`、`team_id`、`agent_id`。模型仍走各 Agent 原来的登录和
+模型配置；后端不可达时 Hook fail-open，不阻塞 Agent。
