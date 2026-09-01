@@ -17,6 +17,7 @@
       "ubuntu": "docs/platforms/ubuntu.md",
       "macos": "docs/platforms/macos.md"
     },
+    "interaction_docs": "docs/MEMORY_INTERACTION.md",
     "config_template": "tdai-memory.example.json",
     "requires_secret_input": true
   },
