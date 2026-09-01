@@ -25,7 +25,8 @@
    选择或无关权限配置。
 7. 按当前平台文档运行 `tdai-hook.py --status` 和仓库测试；再用一个普通 Prompt、
    一次 `/tdai-recall <query>` 和一次正常 Stop 验证召回与写回。若宿主提供 Hook
-   列表命令，也检查该 Hook 已加载。
+   列表命令，也检查该 Hook 已加载。Windows command hook 必须使用宿主支持的
+   argv 或规范化绝对路径，不能把环境变量和多重引号嵌套进 JSON command。
 8. 最后报告实际写入的配置路径、生成的原生 Hook 路径、验证结果和仍需用户
    配置的项目。任何异常都应 fail-open，不能阻塞宿主 Agent。
 
