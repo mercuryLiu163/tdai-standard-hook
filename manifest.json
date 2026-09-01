@@ -1,0 +1,15 @@
+[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
+
+{
+  "name": "tdai-standard-hook",
+  "version": "1.0.0",
+  "protocol": "tdai-hook/v1",
+  "events": ["SessionStart", "UserPromptSubmit", "Stop"],
+  "entrypoint": "tdai-hook.py",
+  "fail_open": true,
+  "adapters": {
+    "stdin_json": ["codex", "claude-code", "zcode", "grok", "agy", "deepseek", "harness"],
+    "opencode_v2": "adapters/opencode-plugin.ts",
+    "native_adapter_required": ["agy", "opencode"]
+  }
+}
