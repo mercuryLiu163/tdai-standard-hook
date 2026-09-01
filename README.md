@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 # TDAI Standard Hook
 
 跨 Agent 的 Tencent Agent Memory Hook 标准实现（`tdai-hook/v1`）。核心脚本不
