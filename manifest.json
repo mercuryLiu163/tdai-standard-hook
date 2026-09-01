@@ -1,10 +1,16 @@
 {
   "name": "tdai-standard-hook",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "protocol": "tdai-hook/v1",
   "events": ["SessionStart", "UserPromptSubmit", "Stop"],
   "entrypoint": "tdai-hook.py",
   "fail_open": true,
+  "installation": {
+    "agent_entrypoint": "AGENT_INSTALL.md",
+    "bootstrap": "bootstrap.ps1",
+    "config_template": "tdai-memory.example.json",
+    "requires_secret_input": true
+  },
   "adapters": {
     "stdin_json": ["codex", "claude-code", "zcode", "grok", "agy", "deepseek", "harness"],
     "opencode_v2": "adapters/opencode-plugin.ts",
