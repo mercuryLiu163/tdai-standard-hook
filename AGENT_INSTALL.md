@@ -7,8 +7,8 @@
 ## 执行顺序
 
 1. 从用户消息取得 GitHub 仓库地址，确认它是本套件仓库；读取
-   `README.md`、`protocol/tdai-hook-v1.md`、`adapters/README.md` 和当前系统
-   对应的 `docs/platforms/*.md`。
+   `README.md`、`docs/MEMORY_INTERACTION.md`、`protocol/tdai-hook-v1.md`、
+   `adapters/README.md` 和当前系统对应的 `docs/platforms/*.md`。
 2. 识别宿主操作系统：Windows 使用 `bootstrap.ps1`，Ubuntu 和 macOS 使用
    `bootstrap.sh`。按对应平台文档执行；默认安装目录分别是
    `%USERPROFILE%\\.tdai-hook` 或 `$HOME/.tdai-hook`。已有安装目录有未提交修改时，
@@ -19,11 +19,12 @@
 4. 配置完成后，设置 `TDAI_CONFIG` 指向用户私有配置，并使用当前 Agent 对应的
    `TDAI_PROFILE`。没有现成 profile 时，只添加客户端标识，不复制 Memory 业务逻辑。
 5. 阅读当前 Agent 自己的 Hook 文档，生成它自己的原生 Hook。原生 Hook 只做
-   事件字段映射、调用 `tdai-hook.py` 和响应格式映射；核心标准见
-   `protocol/tdai-hook-v1.md`。
+   事件字段映射、调用 `tdai-hook.py` 和响应格式映射；交互时序见
+   `docs/MEMORY_INTERACTION.md`，核心标准见 `protocol/tdai-hook-v1.md`。
 6. 合并原生配置时保留已有 Hook；能备份就先备份。不要修改模型 endpoint、模型
    选择或无关权限配置。
-7. 按当前平台文档运行 `tdai-hook.py --status` 和仓库测试。若宿主提供 Hook
+7. 按当前平台文档运行 `tdai-hook.py --status` 和仓库测试；再用一个普通 Prompt、
+   一次 `/tdai-recall <query>` 和一次正常 Stop 验证召回与写回。若宿主提供 Hook
    列表命令，也检查该 Hook 已加载。
 8. 最后报告实际写入的配置路径、生成的原生 Hook 路径、验证结果和仍需用户
    配置的项目。任何异常都应 fail-open，不能阻塞宿主 Agent。
