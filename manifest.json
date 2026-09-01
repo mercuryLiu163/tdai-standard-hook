@@ -1,13 +1,22 @@
 {
   "name": "tdai-standard-hook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "protocol": "tdai-hook/v1",
   "events": ["SessionStart", "UserPromptSubmit", "Stop"],
   "entrypoint": "tdai-hook.py",
   "fail_open": true,
   "installation": {
     "agent_entrypoint": "AGENT_INSTALL.md",
-    "bootstrap": "bootstrap.ps1",
+    "bootstrap": {
+      "windows": "bootstrap.ps1",
+      "ubuntu": "bootstrap.sh",
+      "macos": "bootstrap.sh"
+    },
+    "platform_docs": {
+      "windows": "docs/platforms/windows.md",
+      "ubuntu": "docs/platforms/ubuntu.md",
+      "macos": "docs/platforms/macos.md"
+    },
     "config_template": "tdai-memory.example.json",
     "requires_secret_input": true
   },
