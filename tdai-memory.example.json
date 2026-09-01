@@ -1,0 +1,25 @@
+[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
+
+{
+  "endpoint": "http://127.0.0.1:8420",
+  "service_id": "default",
+  "user_key": "REPLACE_WITH_TDAI_USER_KEY",
+  "user_id": "usr-REPLACE",
+  "team_id": "team-REPLACE",
+  "team_name": "你的团队",
+  "agent_id": "agt-REPLACE",
+  "agent_name": "你的 Agent",
+  "timeout_sec": 4,
+  "require_task_selection": true,
+  "capture_enabled": true,
+  "output_mode": "hookSpecificOutput",
+  "profiles": {
+    "codex": { "client": "codex" },
+    "claude-code": { "client": "claude-code" },
+    "zcode": { "client": "zcode" },
+    "grok": { "client": "grok" },
+    "opencode": { "client": "opencode" },
+    "deepseek": { "client": "deepseek" },
+    "harness": { "client": "harness" }
+  }
+}
