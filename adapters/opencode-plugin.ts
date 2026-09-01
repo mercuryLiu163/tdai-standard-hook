@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 import { Plugin } from "@opencode-ai/plugin/v2"
 import { spawn } from "node:child_process"
 import { fileURLToPath } from "node:url"
