@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 {
   "name": "tdai-opencode-plugin",
   "version": "1.0.0",
