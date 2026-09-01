@@ -5,6 +5,9 @@
 “原生事件 → 标准 JSON → 标准核心 → 原生响应”，核心只负责记忆、Task、隔离、
 日志和 fail-open。
 
+安装后的端到端交互、API 数据流和可复制提示词见
+[`docs/MEMORY_INTERACTION.md`](../docs/MEMORY_INTERACTION.md)。
+
 ## 统一 JSON Hook 协议
 
 所有 stdin 适配器都向 `tdai-hook.py` 发送一个 JSON 对象，每次一行或一整个
