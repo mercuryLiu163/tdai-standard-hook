@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 # 适配器与统一协议
 
 本目录只定义适配边界，不把任何厂商的配置路径写死到 Memory 核心中。
