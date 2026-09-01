@@ -76,7 +76,7 @@ if [ ! -f "$config" ]; then
   mkdir -p "$(dirname "$config")"
   cp "$install_root/tdai-memory.example.json" "$config"
   echo "已创建用户私有配置模板：$config"
-  echo "请填写 endpoint、user_key、user_id、team_id、agent_id 后再次运行。"
+  echo "请填写 endpoint、user_key、team_id、agent_id 后再次运行；user_id 将按 user_key 自动校正。"
   exit 2
 fi
 

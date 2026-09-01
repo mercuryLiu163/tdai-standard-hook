@@ -34,7 +34,7 @@ if (-not (Test-Path -LiteralPath $config)) {
     New-Item -ItemType Directory -Path $configDir -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $root "tdai-memory.example.json") -Destination $config
     Write-Host "已创建配置模板：$config"
-    Write-Host "请先编辑 endpoint、user_key、user_id、team_id、agent_id，再重新运行本脚本。"
+    Write-Host "请先编辑 endpoint、user_key、team_id、agent_id，再重新运行；user_id 将按 user_key 自动校正。"
     exit 2
 }
 

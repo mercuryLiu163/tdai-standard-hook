@@ -17,8 +17,8 @@ chmod +x bootstrap.sh
 ```
 
 首次运行会在 `$HOME/.tdai/config.json` 创建模板并停止。只在本机编辑该文件，
-填入真实的 `endpoint`、`user_key`、`user_id`、`team_id`、`agent_id`，不要提交或
-发送它。
+填入真实的 `endpoint`、`user_key`、`team_id`、`agent_id`；`user_id` 会在安装时
+按 user_key 自动认证并校正。不要提交或发送它。
 
 配置完成后运行：
 

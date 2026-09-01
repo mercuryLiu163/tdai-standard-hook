@@ -49,7 +49,8 @@ Agent 仍然负责回答用户；Hook 只负责在回答前提供上下文、在
 | `UserPromptSubmit` | 处理 Task 命令；判断是否召回；保存当前 prompt 到会话状态 | 触发召回时调用 `/v3/atomic/search`、`/v3/core/read`、`/v3/scenario/ls` | `<tdai-task-binding>`、可选 `<tdai-memory>` |
 | `Stop` | 读取本轮真实 prompt 和真实 assistant message，写回对话 | `/v3/conversation/add` | 通常为空；不阻塞回复 |
 
-所有请求都会携带配置中的 `team_id`、`agent_id`、`user_id`；绑定 Task 时再带
+所有请求都会携带配置中的 `team_id`、`agent_id`、`user_id`；安装器会先用
+`user_key` 认证并校验 `user_id` 与 Agent owner 一致，绑定 Task 时再带
 `task_id`，保存对话时带 `session_id`。认证密钥只放在用户私有配置和请求头中，
 不会进入提示词、Hook 输出或 Git 仓库。
 

@@ -72,6 +72,10 @@ python3 "$HOME/.tdai-hook/install.py"                    # 只检查，不写配
 可用 `TDAI_PROFILE` 选择同一配置中的客户端 profile。标准入口不修改模型地址，
 也不把 Memory endpoint 当作模型代理。
 
+`config.user_id` 只能取自 `user_key` 的 `/v3/meta/auth/verify` 结果，并且必须等于
+所选 `agent.owner_user_id`；不要使用 `team.owner_user_id`。字段含义和错误示例见
+[`docs/INSTALL.md`](docs/INSTALL.md#user_idteam-owner-与-agent-owner)。
+
 ## 稳定契约
 
 输入事件支持 `SessionStart`、`UserPromptSubmit`、`Stop`，同时接受 camelCase 和
