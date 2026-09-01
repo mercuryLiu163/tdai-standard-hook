@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 MAX_PROMPT = 4000
 MAX_RECALL = 1800
 TASK_SELECTION_VERSION = 2
