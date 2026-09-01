@@ -1,0 +1,10 @@
+[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
+
+__pycache__/
+*.py[cod]
+*.log
+*.jsonl
+tdai-memory.json
+config.json
+tdai-memory-state/
+.venv/
