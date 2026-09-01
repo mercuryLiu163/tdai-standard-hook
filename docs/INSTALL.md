@@ -6,6 +6,7 @@
 - [Windows](platforms/windows.md)
 - [Ubuntu](platforms/ubuntu.md)
 - [macOS](platforms/macos.md)
+- [交互流程、数据流和提示词](MEMORY_INTERACTION.md)
 
 ## 仓库结构
 
@@ -31,6 +32,9 @@ python -m unittest discover -s tests -v
 
 Windows 使用 `py -3` 替代 `python`；Ubuntu/macOS 使用 `python3`。发布到 GitHub
 后，用户或 Agent 只需提供仓库地址，平台安装文档会完成其余步骤。
+
+安装完成后不要跳过 [Agent 与 Memory 交互说明](MEMORY_INTERACTION.md)；目标 Agent
+必须按其中的事件映射和验证提示词确认 UserPromptSubmit 的召回以及 Stop 的写回。
 
 ## 各 Agent 接入
 
