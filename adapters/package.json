@@ -1,0 +1,12 @@
+[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
+
+{
+  "name": "tdai-opencode-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./opencode-plugin.ts",
+  "dependencies": {
+    "@opencode-ai/plugin": "beta"
+  }
+}
