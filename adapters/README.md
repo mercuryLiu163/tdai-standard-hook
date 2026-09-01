@@ -60,6 +60,19 @@ python3 $HOME/.tdai-hook/tdai-hook.py
 `hookSpecificOutput.additionalContext`（或顶层 `additionalContext`）是要注入
 回模型的上下文。
 
+### Windows 命令路径约束
+
+如果宿主只接受一个 Windows command 字符串，使用安装后的实际绝对路径和正斜杠，
+不要在 JSON 字符串里嵌套 `"%USERPROFILE%\\..."` 这类多重引号：
+
+```text
+py -3 C:/Users/<user>/.tdai-hook/adapters/<agent>-hook.py
+```
+
+宿主若支持 argv 数组，优先传递 `py`、`-3`、脚本绝对路径三个参数。适配器内部
+应从自身文件位置解析 `tdai-hook.py`，不要把某台电脑的用户名或固定路径写入
+标准仓库。
+
 如果 Agent 的事件名或输出协议不同（例如 agy 的 `PreInvocation`/`Stop`、
 OpenCode 的进程内插件），Agent 自己生成原生适配器；本仓库不把该适配器当作
 核心实现。适配器可以读取宿主的 transcript，再组装标准事件，但不能把厂商
