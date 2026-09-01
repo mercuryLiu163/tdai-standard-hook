@@ -617,7 +617,7 @@ class Hook:
         elif self.require_task():
             self.emit_choices(sid, event_name="SessionStart")
         else:
-            binding = self.bind(sid, None)
+            binding = self.bind(sid, self.load_last_binding())
             self.emit(self.format_binding(binding, announce=True), "SessionStart")
 
     def resolve_last(self, tasks: list[dict[str, Any]]) -> dict[str, Any] | None | bool:
@@ -661,7 +661,8 @@ class Hook:
             return
 
         if binding is None and not self.require_task():
-            binding = self.bind(sid, None)
+            last = self.load_last_binding()
+            binding = self.bind(sid, last if last else None)
             state = self.load_state(sid)
 
         if binding is None:
@@ -747,11 +748,11 @@ class Hook:
             self.update_state(sid, skip_capture_once=None)
             self.log("skip_capture", session=sid, reason="control_turn")
             return
-        binding = self.binding(state)
+        binding = self.binding(state) or self.load_last_binding()
         if not binding:
             self.log("skip_capture", session=sid, reason="task_not_bound")
             return
-        prompt = str(state.get("prompt") or "")
+        prompt = str(state.get("prompt") or self.prompt_from(event) or "")
         reply = self.assistant_from(event)
         if not prompt or not reply:
             self.log("skip_capture", session=sid, prompt=bool(prompt), reply=bool(reply))
