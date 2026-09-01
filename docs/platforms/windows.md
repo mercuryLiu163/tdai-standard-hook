@@ -29,6 +29,18 @@ Set-ExecutionPolicy -Scope Process Bypass
 省略 `-Apply` 时只检查，不修改 Agent 配置。更新已有安装时加 `-Update`；安装
 目录有未提交修改时脚本会拒绝覆盖。
 
+## Command Hook 路径
+
+如果宿主的 Hook 配置只接受一个 Windows command 字符串，使用安装后的实际绝对
+路径和正斜杠：
+
+```text
+py -3 C:/Users/<user>/.tdai-hook/adapters/<agent>-hook.py
+```
+
+不要把 `"%USERPROFILE%\\..."` 再嵌套进 JSON command；宿主支持 argv 时，优先
+传递 `py`、`-3`、脚本路径三个参数。适配器内部应按自身文件位置查找标准核心。
+
 ## 验证
 
 ```powershell
