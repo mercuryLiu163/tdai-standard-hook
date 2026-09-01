@@ -39,13 +39,18 @@ Hook 成功时返回：
 
 ## 标准核心调用
 
-如果 Agent 原生支持 JSON stdin/stdout command hook，直接调用：
+如果 Agent 原生支持 JSON stdin/stdout command hook，按平台调用：
 
 ```text
-py -3 C:\Users\<user>\.tdai-hook\tdai-hook.py
+# Windows
+py -3 %USERPROFILE%\\.tdai-hook\\tdai-hook.py
+
+# Ubuntu/macOS
+python3 $HOME/.tdai-hook/tdai-hook.py
 ```
 
-调用前设置 `TDAI_CONFIG`（或使用默认的 `%USERPROFILE%\\.tdai\\config.json`），
+调用前设置 `TDAI_CONFIG`（或使用平台默认的 Windows
+`%USERPROFILE%\\.tdai\\config.json`、Ubuntu/macOS `$HOME/.tdai/config.json`），
 并可设置 `TDAI_PROFILE=codex|claude-code|zcode|grok|agy|deepseek|harness`。
 适配器至少要完成以下字段映射：`event`、`session_id`、`prompt`、
 `last_assistant_message`、`cwd`、`client`。标准输出中的
@@ -93,6 +98,7 @@ OpenCode 是进程内 TypeScript 插件，不是 stdin command hook。仓库中�
 
 ## 安装原则
 
-`install.ps1` 默认只打印方案（dry-run），只有显式 `-Apply` 才会备份并合并
-Claude Code、Codex、ZCode 已存在的 JSON 配置；不会覆盖其他字段、不会触碰
-OpenCode 配置，也不会把密钥写入脚本。
+Windows 的 `install.ps1` 与 Ubuntu/macOS 的 `install.py` 默认只打印方案
+（dry-run），只有显式 `-Apply` / `--apply` 才会备份并合并 Claude Code、Codex、
+ZCode 已存在的 JSON 配置；不会覆盖其他字段、不会触碰 OpenCode 配置，也不会把
+密钥写入脚本。
