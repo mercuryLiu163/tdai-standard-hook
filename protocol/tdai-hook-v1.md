@@ -1,5 +1,3 @@
-[ERROR] - (starship::print): Under a 'dumb' terminal (TERM=dumb).
-
 # TDAI Hook Protocol v1
 
 这是各 Agent 适配器与 Memory 核心之间的稳定边界。核心不依赖任何 Agent
