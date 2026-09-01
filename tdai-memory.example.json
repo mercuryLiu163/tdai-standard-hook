@@ -16,6 +16,7 @@
     "claude-code": { "client": "claude-code" },
     "zcode": { "client": "zcode" },
     "grok": { "client": "grok" },
+    "agy": { "client": "agy" },
     "opencode": { "client": "opencode" },
     "deepseek": { "client": "deepseek" },
     "harness": { "client": "harness" }
