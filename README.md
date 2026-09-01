@@ -37,6 +37,20 @@ tests/                        # 无网络协议回归测试
 
 完整步骤见 [`docs/INSTALL.md`](docs/INSTALL.md) 及对应平台文档。
 
+## Agent 如何与 Memory 交互
+
+安装只解决“把 Hook 放进去”；真实交互的数据流、三类事件、Task 绑定、召回/写回
+条件、故障降级和可直接复制的 Agent 提示词，见
+[`docs/MEMORY_INTERACTION.md`](docs/MEMORY_INTERACTION.md)。核心路径是：
+
+```text
+原生事件 → 原生适配器 → tdai-hook.py → Memory API
+         ← 原生响应 ← additionalContext ←
+```
+
+Agent 不需要改用 Memory 作为模型代理：UserPromptSubmit 时按条件注入上下文，
+Stop 时把真实对话写回 Memory。
+
 ## 快速接入
 
 Windows：
