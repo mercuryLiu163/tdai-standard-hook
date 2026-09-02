@@ -220,6 +220,14 @@ class Hook:
     @staticmethod
     def clip(value: str, limit: int) -> str:
         value = (value or "").strip()
+        # Some hosts pass JSON-decoded UTF-16 surrogate code units (for
+        # example, a lone surrogate from a tool transcript). They cannot be
+        # encoded as UTF-8 by post(); normalize valid pairs and replace
+        # malformed units so capture remains fail-open.
+        try:
+            value = value.encode("utf-16", "surrogatepass").decode("utf-16", "replace")
+        except UnicodeError:
+            value = value.encode("utf-8", "replace").decode("utf-8")
         return value if len(value) <= limit else value[: limit - 1] + "…"
 
     def state_path(self, sid: str) -> Path:

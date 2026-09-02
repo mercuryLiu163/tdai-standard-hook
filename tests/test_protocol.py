@@ -235,5 +235,54 @@ class StandardHookProtocolTests(unittest.TestCase):
             thread.join(timeout=2)
 
 
+    def test_stop_replaces_malformed_surrogates_before_capture(self) -> None:
+        calls: list[tuple[str, dict]] = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self) -> None:  # noqa: N802 - stdlib protocol name
+                length = int(self.headers.get("content-length", "0"))
+                body = json.loads(self.rfile.read(length) or b"{}")
+                calls.append((self.path, body))
+                payload = json.dumps({"code": 0, "data": {"accepted_ids": ["msg-surrogate"]}}).encode()
+                self.send_response(200)
+                self.send_header("content-type", "application/json")
+                self.send_header("content-length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+            def log_message(self, *_args) -> None:
+                return
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                state = root / "state"
+                state.mkdir()
+                (state / "s-surrogate.json").write_text(json.dumps({
+                    "task_binding": {"mode": "task", "task_id": "task-surrogate", "title": "demo"},
+                    "binding_announced": True,
+                    "prompt": "普通请求",
+                }), encoding="utf-8")
+                config = root / "config.json"
+                config.write_text(json.dumps({
+                    "endpoint": f"http://127.0.0.1:{server.server_address[1]}",
+                    "user_key": "test", "user_id": "usr-test", "team_id": "team-test",
+                    "agent_id": "agt-test", "require_task_selection": False,
+                }), encoding="utf-8")
+                self.run_hook({
+                    "hook_event_name": "Stop", "session_id": "s-surrogate",
+                    "last_assistant_message": "合法😀和孤立\ud800字符", "client": "codex",
+                }, state, config)
+                self.assertEqual([path for path, _ in calls], ["/v3/conversation/add"])
+                self.assertEqual(calls[0][1]["messages"][1]["content"], "合法😀和孤立�字符")
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
+
 if __name__ == "__main__":
     unittest.main()
