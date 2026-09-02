@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 MAX_PROMPT = 4000
 MAX_RECALL = 1800
 TASK_SELECTION_VERSION = 2
@@ -48,6 +48,18 @@ def utc_now() -> str:
 
 def safe_name(value: str) -> str:
     return "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in value)[:100]
+
+
+def cli_value(name: str) -> str:
+    """Return a small launcher option without requiring host env support."""
+    flag = f"--{name}"
+    args = sys.argv[1:]
+    for index, arg in enumerate(args):
+        if arg == flag and index + 1 < len(args):
+            return args[index + 1].strip()
+        if arg.startswith(flag + "="):
+            return arg.split("=", 1)[1].strip()
+    return ""
 
 
 class Hook:
@@ -93,7 +105,9 @@ class Hook:
         # secret or changing the core.  TDAI_PROFILE takes precedence over the
         # provider's name so CI/harnesses can select a deterministic profile.
         profile_name = (
-            os.environ.get("TDAI_PROFILE")
+            cli_value("profile")
+            or cli_value("client")
+            or os.environ.get("TDAI_PROFILE")
             or os.environ.get("TDAI_CLIENT")
             or str(raw.get("client") or "")
         ).strip()
@@ -116,7 +130,8 @@ class Hook:
 
     def client_name(self, event: dict[str, Any]) -> str:
         value = (
-            os.environ.get("TDAI_CLIENT")
+            cli_value("client")
+            or os.environ.get("TDAI_CLIENT")
             or event.get("client")
             or event.get("provider")
             or self.cfg.get("client")
@@ -814,17 +829,17 @@ def status() -> int:
 
 def main() -> int:
     args = [arg for arg in sys.argv[1:] if arg]
-    if args and args[0] in ("--version", "version"):
+    if any(arg in ("--version", "version") for arg in args):
         print(VERSION)
         return 0
-    if args and args[0] in ("--status", "status"):
+    if any(arg in ("--status", "status") for arg in args):
         return status()
-    if args and args[0] in ("--contract", "contract"):
+    if any(arg in ("--contract", "contract") for arg in args):
         print("JSON stdin -> hookSpecificOutput.additionalContext JSON stdout; events: SessionStart, UserPromptSubmit, Stop")
         return 0
-    if args and args[0] in ("--list", "list"):
+    if any(arg in ("--list", "list") for arg in args):
         try:
-            hook = Hook({"client": os.environ.get("TDAI_CLIENT", "generic")})
+            hook = Hook({"client": os.environ.get("TDAI_CLIENT") or cli_value("client") or "generic"})
             print(hook.format_choices(hook.list_tasks(), required=False))
             return 0
         except Exception as exc:

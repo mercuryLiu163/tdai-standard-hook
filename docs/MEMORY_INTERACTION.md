@@ -233,7 +233,8 @@ Task 列表：/tdai-task list
 
 | 现象 | 优先检查 |
 | --- | --- |
-| 没有任何上下文 | 原生 Hook 是否真的调用核心；stdin 是否为标准 JSON；`TDAI_CONFIG`/`TDAI_PROFILE` 是否正确 |
+| 没有任何上下文 | 原生 Hook 是否真的调用核心；stdin 是否为标准 JSON；`TDAI_CONFIG` 和客户端 profile 是否正确 |
+| 日志或绑定提示显示 `generic` | 启动命令缺少 `--client <agent-name>`，且事件 JSON 也未传 `client`；Windows 优先补命令参数，不要设置影响其他 Agent 的全局环境变量 |
 | `memory=0` | 是否只是普通 Prompt；用 `/tdai-recall <query>` 区分“未触发”与“后端无结果” |
 | 只有绑定没有记忆 | 召回接口无命中，或 Task/Agent 隔离范围不匹配 |
 | 没有 `captured` | Stop 未传真实 assistant message、捕获被关闭、未绑定，或只触发了控制命令 |

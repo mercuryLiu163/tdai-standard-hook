@@ -22,6 +22,11 @@
 camelCase 别名。宿主没有直接提供 prompt 或 assistant message 时，适配器
 可以从宿主 transcript 取最近一条对应消息。
 
+启动器也可以用 `tdai-hook.py --client <agent-name>` 固定客户端。该参数既用于日志
+归因，也选择配置中同名的 `profiles.<agent-name>`；事件里的 `client` 仍是协议字段，
+适合能够生成完整标准 JSON 的适配器。环境变量 `TDAI_CLIENT` / `TDAI_PROFILE` 仅作
+兼容，不是 Windows command hook 的首选配置方式。
+
 ## 标准输出
 
 核心默认返回：

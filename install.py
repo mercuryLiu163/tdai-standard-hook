@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 
-EVENTS = ("UserPromptSubmit", "Stop")
+EVENTS = ("SessionStart", "UserPromptSubmit", "Stop")
 
 
 def post_data(cfg: dict[str, Any], path: str, body: dict[str, Any]) -> dict[str, Any]:
@@ -97,9 +97,10 @@ def verify_config_identity(path: Path, apply: bool) -> tuple[bool, str]:
     return True, f"corrected user_id to {authenticated_id}; backup={backup}"
 
 
-def command(root: Path) -> str:
+def command(root: Path, client: str | None = None) -> str:
     runner = 'py -3' if os.name == "nt" else 'python3'
-    return f'{runner} "{root / "tdai-hook.py"}"'
+    suffix = f" --client {client}" if client else ""
+    return f'{runner} "{root / "tdai-hook.py"}"{suffix}'
 
 
 def hook_entry(cmd: str, timeout: int) -> dict:
@@ -163,6 +164,11 @@ def main() -> int:
     root = args.root.expanduser().resolve()
     cfg = (args.config or Path.home() / ".tdai" / "config.json").expanduser()
     cmd = command(root)
+    targets = (
+        (Path.home() / ".codex" / "hooks.json", "codex"),
+        (Path.home() / ".claude" / "settings.json", "claude-code"),
+        (Path.home() / ".zcode" / "hooks" / "hooks.json", "zcode"),
+    )
     print(f"TDAI root: {root}")
     print(f"TDAI config: {cfg}")
     print(f"Command: {cmd}")
@@ -171,22 +177,14 @@ def main() -> int:
     print(f"Identity: {identity_detail}")
     if not args.apply:
         print("Dry-run only. Add --apply to merge existing JSON configs with timestamped backups.")
-        for path in (
-            Path.home() / ".codex" / "hooks.json",
-            Path.home() / ".claude" / "settings.json",
-            Path.home() / ".zcode" / "hooks" / "hooks.json",
-        ):
-            print(f"  {path}: {'present' if path.is_file() else 'missing'}")
+        for path, client in targets:
+            print(f"  {path}: {'present' if path.is_file() else 'missing'}; command={command(root, client)}")
         return 0
     if not identity_ok:
         print("Installation stopped: fix the TDAI identity configuration first.")
         return 2
-    for path in (
-        Path.home() / ".codex" / "hooks.json",
-        Path.home() / ".claude" / "settings.json",
-        Path.home() / ".zcode" / "hooks" / "hooks.json",
-    ):
-        changed, detail = merge_file(path, cmd)
+    for path, client in targets:
+        changed, detail = merge_file(path, command(root, client))
         print(f"{path}: {detail}")
     return 0
 

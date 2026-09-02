@@ -1,6 +1,6 @@
 {
   "name": "tdai-standard-hook",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "protocol": "tdai-hook/v1",
   "events": ["SessionStart", "UserPromptSubmit", "Stop"],
   "entrypoint": "tdai-hook.py",

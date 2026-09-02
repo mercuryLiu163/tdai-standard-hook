@@ -7,10 +7,13 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from install import verify_config_identity
+from install import command, verify_config_identity
 
 
 class InstallIdentityTests(unittest.TestCase):
+    def test_command_can_select_client_without_environment_variable(self) -> None:
+        self.assertTrue(command(Path("/tmp/tdai"), "zcode").endswith(" --client zcode"))
+
     def test_apply_corrects_stale_user_id_without_changing_key(self) -> None:
         class Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802

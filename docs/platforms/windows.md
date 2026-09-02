@@ -41,6 +41,18 @@ py -3 C:/Users/<user>/.tdai-hook/adapters/<agent>-hook.py
 不要把 `"%USERPROFILE%\\..."` 再嵌套进 JSON command；宿主支持 argv 时，优先
 传递 `py`、`-3`、脚本路径三个参数。适配器内部应按自身文件位置查找标准核心。
 
+如果宿主可直接把标准事件 JSON 传给核心，不需要额外适配器，请在普通命令参数中
+显式指定客户端：
+
+```text
+py -3 C:/Users/<user>/.tdai-hook/tdai-hook.py --client zcode
+```
+
+`--client zcode` 会选择配置中的 `profiles.zcode`，并让绑定提示及日志显示
+`client=zcode`。它不是环境变量赋值，可以安全写入只接受 command 字符串的
+`hooks.json`。不要为此设置 Windows 用户级 `TDAI_PROFILE`，因为该全局变量会影响
+同一用户启动的其他 Agent。只有无法传递命令参数时才把环境变量作为兼容方案。
+
 ## 验证
 
 ```powershell

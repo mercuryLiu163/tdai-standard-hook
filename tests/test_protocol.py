@@ -16,11 +16,15 @@ ENTRY = ROOT / "tdai-hook.py"
 
 
 class StandardHookProtocolTests(unittest.TestCase):
-    def run_hook(self, event: dict, state: Path, config: Path) -> tuple[dict, str]:
+    def run_hook(
+        self, event: dict, state: Path, config: Path, *args: str,
+        extra_env: dict[str, str] | None = None,
+    ) -> tuple[dict, str]:
         env = os.environ.copy()
         env.update({"TDAI_CONFIG": str(config), "TDAI_STATE_DIR": str(state)})
+        env.update(extra_env or {})
         result = subprocess.run(
-            [sys.executable, str(ENTRY)],
+            [sys.executable, str(ENTRY), *args],
             input=json.dumps(event),
             text=True,
             capture_output=True,
@@ -83,6 +87,32 @@ class StandardHookProtocolTests(unittest.TestCase):
             }, state, config)
             self.assertEqual(output["hookSpecificOutput"]["hookEventName"], "UserPromptSubmit")
             self.assertIn("Agent:", output["hookSpecificOutput"]["additionalContext"])
+
+    def test_cli_client_selects_profile_without_environment_variable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = root / "config.json"
+            state = root / "state"
+            config.write_text(json.dumps({
+                "endpoint": "http://127.0.0.1:1", "user_key": "x", "user_id": "u",
+                "team_id": "t", "agent_id": "a", "agent_name": "root-agent",
+                "require_task_selection": False,
+                "profiles": {"zcode": {"client": "zcode", "agent_name": "zcode-profile-agent"}},
+            }), encoding="utf-8")
+            state.mkdir()
+            (state / "s-cli.json").write_text(json.dumps({
+                "task_binding": {"mode": "agent", "title": "跨 Task"},
+                "binding_announced": True,
+            }), encoding="utf-8")
+            output, _ = self.run_hook({
+                "hook_event_name": "UserPromptSubmit", "session_id": "s-cli",
+                "prompt": "hello",
+            }, state, config, "--client", "zcode", extra_env={
+                "TDAI_PROFILE": "legacy-global", "TDAI_CLIENT": "legacy-global",
+            })
+            self.assertIn("zcode-profile-agent", output["hookSpecificOutput"]["additionalContext"])
+            log = (state / "hook.log").read_text(encoding="utf-8")
+            self.assertIn("client=zcode", log)
 
     def test_recall_and_stop_use_task_isolation(self) -> None:
         calls: list[tuple[str, dict]] = []

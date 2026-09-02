@@ -69,7 +69,9 @@ python3 "$HOME/.tdai-hook/install.py"                    # 只检查，不写配
 
 设置 `TDAI_CONFIG` 指向用户私有的 Memory 配置；未设置时使用平台默认的
 `$HOME/.tdai/config.json`（Windows 为 `%USERPROFILE%\\.tdai\\config.json`）。
-可用 `TDAI_PROFILE` 选择同一配置中的客户端 profile。标准入口不修改模型地址，
+启动命令可传 `--client <agent-name>`，它会同时选择同名 profile 并记录客户端归因；
+例如 ZCode 使用 `tdai-hook.py --client zcode`。这适用于不支持逐 Hook 环境变量的
+宿主。`TDAI_PROFILE` / `TDAI_CLIENT` 仍作为兼容方式。标准入口不修改模型地址，
 也不把 Memory endpoint 当作模型代理。
 
 `config.user_id` 只能取自 `user_key` 的 `/v3/meta/auth/verify` 结果，并且必须等于
